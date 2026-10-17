@@ -104,6 +104,33 @@
     <string name="compare_window">Evaluation window</string>
     <string name="compare_bets">Bets per draw</string>
 
+    <!-- On-device AI (Gemini Nano) -->
+    <string name="ai_insight_title">On-device AI analysis</string>
+    <string name="ai_insight_badge">Gemini Nano · runs on your phone</string>
+    <string name="ai_insight_unavailable">This device does not support on-device AI. Gemini Nano needs a compatible phone (Pixel 8 or newer, Galaxy S24 or similar) with Android AICore.</string>
+    <string name="ai_insight_download">Download AI model</string>
+    <string name="ai_insight_download_size">One-time download of about %1$s over Wi-Fi. Android AICore shares the model between apps.</string>
+    <string name="ai_insight_downloading">Downloading the model… %1$s</string>
+    <string name="ai_insight_downloading_unknown">Downloading the model…</string>
+    <string name="ai_insight_generate">Analyse my ticket</string>
+    <string name="ai_insight_generating">Analysing on-device…</string>
+    <string name="ai_insight_error">The analysis could not be generated. Please try again.</string>
+    <string name="ai_insight_disclaimer">Written locally by Gemini Nano from the verified data of your ticket. Nothing leaves your phone.</string>
+
+    <!-- Prompt sent to the on-device model (grounded with verified data) -->
+    <string name="ai_prompt_system">You are an honest, concise lottery analyst. Explain the ticket using ONLY the verified data provided. Never invent data and never promise prizes. Always state that draws are random and independent and that no strategy improves the real odds. Answer in English with a single paragraph of 60 to 90 words, without lists or markdown.</string>
+    <string name="ai_prompt_game">Game: %1$s</string>
+    <string name="ai_prompt_strategy">Strategy used to generate it: %1$s</string>
+    <string name="ai_prompt_bets">Bets:</string>
+    <string name="ai_prompt_bet_line">%1$d) %2$s</string>
+    <string name="ai_prompt_bet_refund">%1$s · refund %2$d</string>
+    <string name="ai_prompt_history">Verified archive: %1$s draws (%2$s to %3$s)</string>
+    <string name="ai_prompt_hot">Most frequent main numbers: %1$s</string>
+    <string name="ai_prompt_cold">Least frequent main numbers: %1$s</string>
+    <string name="ai_prompt_overdue">Most overdue main numbers: %1$s</string>
+    <string name="ai_prompt_model">Local AI model hold-out accuracy: %1$s (pure chance: %2$s)</string>
+    <string name="ai_prompt_odds">Odds of the top prize with a single bet: 1 in %1$s</string>
+
     <!-- Generic -->
     <string name="action_back">Back</string>
     <string name="action_close">Close</string>

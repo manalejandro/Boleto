@@ -104,6 +104,33 @@
     <string name="compare_window">Ventana de evaluación</string>
     <string name="compare_bets">Apuestas por sorteo</string>
 
+    <!-- IA en el dispositivo (Gemini Nano) -->
+    <string name="ai_insight_title">Análisis con IA del dispositivo</string>
+    <string name="ai_insight_badge">Gemini Nano · se ejecuta en tu teléfono</string>
+    <string name="ai_insight_unavailable">Este dispositivo no admite IA en el dispositivo. Gemini Nano necesita un teléfono compatible (Pixel 8 o superior, Galaxy S24 o similar) con AICore de Android.</string>
+    <string name="ai_insight_download">Descargar modelo de IA</string>
+    <string name="ai_insight_download_size">Descarga única de unos %1$s por Wi-Fi. AICore de Android comparte el modelo entre aplicaciones.</string>
+    <string name="ai_insight_downloading">Descargando el modelo… %1$s</string>
+    <string name="ai_insight_downloading_unknown">Descargando el modelo…</string>
+    <string name="ai_insight_generate">Analizar mi boleto</string>
+    <string name="ai_insight_generating">Analizando en el dispositivo…</string>
+    <string name="ai_insight_error">No se pudo generar el análisis. Inténtalo de nuevo.</string>
+    <string name="ai_insight_disclaimer">Escrito localmente por Gemini Nano a partir de los datos verificados de tu boleto. Nada sale de tu teléfono.</string>
+
+    <!-- Prompt enviado al modelo local (anclado en datos verificados) -->
+    <string name="ai_prompt_system">Eres un analista de loterías honesto y conciso. Explica el boleto usando SOLO los datos verificados que se te dan. No inventes datos ni prometas premios. Indica siempre que los sorteos son aleatorios e independientes y que ninguna estrategia mejora las probabilidades reales. Responde en español con un único párrafo de 60 a 90 palabras, sin listas ni markdown.</string>
+    <string name="ai_prompt_game">Juego: %1$s</string>
+    <string name="ai_prompt_strategy">Estrategia con la que se generó: %1$s</string>
+    <string name="ai_prompt_bets">Apuestas:</string>
+    <string name="ai_prompt_bet_line">%1$d) %2$s</string>
+    <string name="ai_prompt_bet_refund">%1$s · reintegro %2$d</string>
+    <string name="ai_prompt_history">Histórico verificado: %1$s sorteos (%2$s a %3$s)</string>
+    <string name="ai_prompt_hot">Números principales más frecuentes: %1$s</string>
+    <string name="ai_prompt_cold">Números principales menos frecuentes: %1$s</string>
+    <string name="ai_prompt_overdue">Números principales más retrasados: %1$s</string>
+    <string name="ai_prompt_model">Precisión del modelo local en validación: %1$s (azar puro: %2$s)</string>
+    <string name="ai_prompt_odds">Probabilidad de la máxima categoría con una apuesta simple: 1 entre %1$s</string>
+
     <!-- Genéricos -->
     <string name="action_back">Atrás</string>
     <string name="action_close">Cerrar</string>

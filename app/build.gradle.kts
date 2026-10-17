@@ -11,7 +11,8 @@ android {
 
     defaultConfig {
         applicationId = "com.manalejandro.boleto"
-        minSdk = 24
+        // ML Kit GenAI (Gemini Nano) requires API 26+, so the whole app targets 8.0+.
+        minSdk = 26
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -52,6 +53,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.mlkit.genai.prompt)
     testImplementation(libs.junit)
     testImplementation("org.json:json:20231013")
     androidTestImplementation(platform(libs.androidx.compose.bom))

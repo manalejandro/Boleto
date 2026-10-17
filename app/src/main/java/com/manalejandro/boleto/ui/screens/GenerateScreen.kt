@@ -82,6 +82,9 @@ fun GenerateScreen(
     onCompare: () -> Unit,
     onShare: (String) -> Unit,
     onCopy: (String) -> Unit,
+    onCheckOnDeviceAi: (force: Boolean) -> Unit,
+    onDownloadOnDeviceAi: () -> Unit,
+    onGenerateInsight: (LotteryGame, String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var game by rememberSaveable { mutableStateOf(LotteryGame.EUROMILLIONS) }
@@ -215,6 +218,20 @@ fun GenerateScreen(
                     Text(stringResource(R.string.play_copy))
                 }
             }
+
+            InsightSection(
+                game = game,
+                ticket = ticket,
+                stats = state.stats[game],
+                model = (modelState as? ModelState.Ready)?.model,
+                aiState = state.onDeviceAi,
+                insight = state.onDeviceAi.insight[game],
+                onCheckStatus = { force -> onCheckOnDeviceAi(force) },
+                onDownload = onDownloadOnDeviceAi,
+                onGenerate = { systemPrompt, userPrompt ->
+                    onGenerateInsight(game, systemPrompt, userPrompt)
+                },
+            )
 
             OutlinedButton(
                 onClick = { onCheck(game) },

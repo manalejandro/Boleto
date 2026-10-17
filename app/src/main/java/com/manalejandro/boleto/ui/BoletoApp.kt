@@ -156,6 +156,9 @@ fun BoletoApp(viewModel: MainViewModel = viewModel()) {
                             copyText(context, text, appName)
                             viewModel.notifyCopied()
                         },
+                        onCheckOnDeviceAi = { force -> viewModel.checkOnDeviceAi(force) },
+                        onDownloadOnDeviceAi = viewModel::downloadOnDeviceAi,
+                        onGenerateInsight = viewModel::generateInsight,
                     )
 
                     Screen.COMPARE -> CompareScreen(state = state, onRun = viewModel::compare)

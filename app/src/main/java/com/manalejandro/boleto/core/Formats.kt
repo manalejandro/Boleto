@@ -30,4 +30,14 @@ object Formats {
         format.maximumFractionDigits = decimals
         return format.format(value)
     }
+
+    /** Human readable data size, e.g. "1,8 GB" or "512 MB". */
+    fun dataSize(bytes: Long, locale: Locale): String {
+        val gigabytes = bytes / 1_073_741_824.0
+        return if (gigabytes >= 1.0) {
+            decimal(gigabytes, locale, 1) + " GB"
+        } else {
+            decimal(bytes / 1_048_576.0, locale, 0) + " MB"
+        }
+    }
 }
