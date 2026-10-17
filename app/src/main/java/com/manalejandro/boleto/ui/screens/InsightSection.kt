@@ -164,10 +164,7 @@ fun InsightSection(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = stringResource(
-                        R.string.ai_insight_download_size,
-                        Formats.dataSize(DEFAULT_MODEL_BYTES, locale),
-                    ),
+                    text = stringResource(R.string.ai_insight_download_size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -211,6 +208,32 @@ fun InsightSection(
             }
 
             OnDeviceAiStatus.Available -> Unit
+
+            is OnDeviceAiStatus.Failed -> Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.ai_insight_download_failed),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+                status.reason?.takeIf { it.isNotBlank() }?.let { reason ->
+                    Text(
+                        text = reason,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                TextButton(onClick = onDownload) {
+                    Icon(
+                        imageVector = Icons.Rounded.Refresh,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(R.string.ai_insight_download))
+                }
+            }
         }
 
         when (insight) {
@@ -302,6 +325,3 @@ fun InsightSection(
         }
     }
 }
-
-/** Rough size shown before the download starts (~2 GB of Gemini Nano v3). */
-private const val DEFAULT_MODEL_BYTES = 2_147_483_648L

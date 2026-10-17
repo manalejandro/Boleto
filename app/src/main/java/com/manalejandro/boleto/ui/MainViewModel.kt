@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -249,7 +248,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun checkOnDeviceAi(force: Boolean = false) {
         if (_state.value.onDeviceAi.checked && !force) return
         viewModelScope.launch {
-            val status = withContext(Dispatchers.Default) { onDeviceAi.status() }
+            val status = onDeviceAi.status()
             _state.update {
                 it.copy(onDeviceAi = it.onDeviceAi.copy(status = status, checked = true))
             }
@@ -260,13 +259,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun downloadOnDeviceAi() {
         if (_state.value.onDeviceAi.status is OnDeviceAiStatus.Downloading) return
         viewModelScope.launch {
-            onDeviceAi.download()
-                .flowOn(Dispatchers.Default)
-                .collect { status ->
-                    _state.update {
-                        it.copy(onDeviceAi = it.onDeviceAi.copy(status = status, checked = true))
-                    }
+            // Immediate feedback: AICore may take a moment before emitting.
+            _state.update {
+                it.copy(
+                    onDeviceAi = it.onDeviceAi.copy(
+                        status = OnDeviceAiStatus.Downloading(0L, 0L),
+                        checked = true,
+                    )
+                )
+            }
+            var last: OnDeviceAiStatus? = null
+            onDeviceAi.download().collect { status ->
+                last = status
+                _state.update {
+                    it.copy(onDeviceAi = it.onDeviceAi.copy(status = status, checked = true))
                 }
+            }
+            // If the flow ended without a definitive result (AICore can keep
+            // downloading in the background), ask for the real status.
+            if (last is OnDeviceAiStatus.Downloading) {
+                val status = onDeviceAi.status()
+                _state.update {
+                    it.copy(onDeviceAi = it.onDeviceAi.copy(status = status, checked = true))
+                }
+            }
         }
     }
 
@@ -281,16 +297,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 )
             }
-            val next = runCatching {
-                withContext(Dispatchers.Default) {
-                    onDeviceAi.generate(systemPrompt, userPrompt)
-                }
-            }.fold(
-                onSuccess = { text ->
-                    if (text.isBlank()) InsightState.Error else InsightState.Ready(text)
-                },
-                onFailure = { InsightState.Error },
-            )
+            val next = runCatching { onDeviceAi.generate(systemPrompt, userPrompt) }
+                .fold(
+                    onSuccess = { text ->
+                        if (text.isBlank()) InsightState.Error else InsightState.Ready(text)
+                    },
+                    onFailure = { InsightState.Error },
+                )
             _state.update {
                 it.copy(
                     onDeviceAi = it.onDeviceAi.copy(

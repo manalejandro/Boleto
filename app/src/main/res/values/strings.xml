@@ -109,9 +109,10 @@
     <string name="ai_insight_badge">Gemini Nano · runs on your phone</string>
     <string name="ai_insight_unavailable">This device does not support on-device AI. Gemini Nano needs a compatible phone (Pixel 8 or newer, Galaxy S24 or similar) with Android AICore.</string>
     <string name="ai_insight_download">Download AI model</string>
-    <string name="ai_insight_download_size">One-time download of about %1$s over Wi-Fi. Android AICore shares the model between apps.</string>
+    <string name="ai_insight_download_size">One-time download of a few gigabytes over Wi-Fi. Android AICore shares the model between apps.</string>
     <string name="ai_insight_downloading">Downloading the model… %1$s</string>
     <string name="ai_insight_downloading_unknown">Downloading the model…</string>
+    <string name="ai_insight_download_failed">The model could not be downloaded.</string>
     <string name="ai_insight_generate">Analyse my ticket</string>
     <string name="ai_insight_generating">Analysing on-device…</string>
     <string name="ai_insight_error">The analysis could not be generated. Please try again.</string>

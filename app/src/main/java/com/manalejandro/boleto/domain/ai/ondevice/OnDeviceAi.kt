@@ -18,6 +18,9 @@ sealed interface OnDeviceAiStatus {
 
     /** Model downloaded and ready to use. */
     data object Available : OnDeviceAiStatus
+
+    /** Something went wrong (AICore error). [reason] is the raw detail. */
+    data class Failed(val reason: String?) : OnDeviceAiStatus
 }
 
 /**
