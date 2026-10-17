@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Ball outline -->
+    <path
+        android:pathData="M35,55 a19,19 0 1 0 38,0 a19,19 0 1 0 -38,0 Z"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3.6" />
+
+    <!-- Number 7 -->
+    <path
+        android:pathData="M46,47 L62,47"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="5.4"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M60,48.5 L48.5,65"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="5.4"
+        android:strokeLineCap="round" />
+
+    <!-- Sparkles -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M74,30.5 Q75.2,34.8 79.5,36 Q75.2,37.2 74,41.5 Q72.8,37.2 68.5,36 Q72.8,34.8 74,30.5 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M32,70 Q32.9,73.1 36,74 Q32.9,74.9 32,78 Q31.1,74.9 28,74 Q31.1,73.1 32,70 Z" />
+</vector>

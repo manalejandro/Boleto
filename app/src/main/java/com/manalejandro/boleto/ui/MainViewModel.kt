@@ -1,0 +1,245 @@
+package com.manalejandro.boleto.ui
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.manalejandro.boleto.core.IsoDate
+import com.manalejandro.boleto.data.Boleto
+import com.manalejandro.boleto.data.Draw
+import com.manalejandro.boleto.data.LotteryGame
+import com.manalejandro.boleto.data.LotteryRepository
+import com.manalejandro.boleto.data.Strategy
+import com.manalejandro.boleto.domain.Backtester
+import com.manalejandro.boleto.domain.CheckOutcome
+import com.manalejandro.boleto.domain.GameStats
+import com.manalejandro.boleto.domain.StrategyResult
+import com.manalejandro.boleto.domain.TicketGenerator
+import com.manalejandro.boleto.domain.ai.AiModel
+import com.manalejandro.boleto.domain.ai.AiTrainer
+import com.manalejandro.boleto.domain.checkLines
+import com.manalejandro.boleto.domain.computeStats
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+sealed interface SyncState {
+    data object Idle : SyncState
+    data class Running(
+        val game: LotteryGame,
+        val gameIndex: Int,
+        val gameCount: Int,
+        val fetched: Int,
+    ) : SyncState
+    data class Done(val added: Int) : SyncState
+    data object Error : SyncState
+}
+
+sealed interface ModelState {
+    data object Missing : ModelState
+    data object Training : ModelState
+    data class Ready(val model: AiModel) : ModelState
+    data object Unavailable : ModelState
+}
+
+sealed interface ComparisonState {
+    data object Idle : ComparisonState
+    data class Running(val fraction: Float) : ComparisonState
+    data class Done(val results: List<StrategyResult>, val window: Int, val bets: Int) : ComparisonState
+    data object Error : ComparisonState
+}
+
+sealed interface AppMessage {
+    data class SyncDone(val added: Int) : AppMessage
+    data object SyncFailed : AppMessage
+    data object TicketCopied : AppMessage
+    data object NotEnoughHistory : AppMessage
+}
+
+data class UiState(
+    val loading: Boolean = true,
+    val draws: Map<LotteryGame, List<Draw>> = emptyMap(),
+    val stats: Map<LotteryGame, GameStats> = emptyMap(),
+    val tickets: Map<LotteryGame, Boleto?> = emptyMap(),
+    val checks: Map<LotteryGame, CheckOutcome> = emptyMap(),
+    val models: Map<LotteryGame, ModelState> = emptyMap(),
+    val lastUpdates: Map<LotteryGame, Long?> = emptyMap(),
+    val sync: SyncState = SyncState.Idle,
+    val comparison: ComparisonState = ComparisonState.Idle,
+)
+
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = LotteryRepository(application)
+
+    private val _state = MutableStateFlow(UiState())
+    val state: StateFlow<UiState> = _state.asStateFlow()
+
+    private val _messages = MutableSharedFlow<AppMessage>(extraBufferCapacity = 8)
+    val messages: SharedFlow<AppMessage> = _messages.asSharedFlow()
+
+    init {
+        viewModelScope.launch { load() }
+    }
+
+    private suspend fun load() {
+        val draws = repository.loadAll()
+        val stats = draws.mapValues { (game, list) -> computeStats(game, list) }
+        val tickets = LotteryGame.entries.associateWith { repository.prefs.ticket(it) }
+        val lastUpdates = LotteryGame.entries.associateWith { repository.prefs.lastUpdate(it) }
+        _state.update {
+            it.copy(
+                loading = false,
+                draws = draws,
+                stats = stats,
+                tickets = tickets,
+                lastUpdates = lastUpdates,
+            )
+        }
+        LotteryGame.entries.forEach { game -> ensureModel(game, draws[game].orEmpty()) }
+    }
+
+    private suspend fun ensureModel(game: LotteryGame, draws: List<Draw>, force: Boolean = false) {
+        if (!force) {
+            val raw = repository.prefs.modelJson(game)
+            val cached = raw?.let { AiModel.fromJson(game, it) }
+            if (cached != null && cached.isFresh(draws)) {
+                _state.update { it.copy(models = it.models + (game to ModelState.Ready(cached))) }
+                return
+            }
+        }
+        if (draws.size < AiTrainer.MIN_DRAWS) {
+            _state.update { it.copy(models = it.models + (game to ModelState.Unavailable)) }
+            return
+        }
+        _state.update { it.copy(models = it.models + (game to ModelState.Training)) }
+        val model = withContext(Dispatchers.Default) { AiTrainer.train(game, draws) }
+        if (model != null) {
+            repository.prefs.setModelJson(game, model.toJson())
+            _state.update { it.copy(models = it.models + (game to ModelState.Ready(model))) }
+        } else {
+            _state.update { it.copy(models = it.models + (game to ModelState.Unavailable)) }
+        }
+    }
+
+    /** Downloads every draw published since the last stored one. */
+    fun sync() {
+        if (_state.value.sync is SyncState.Running) return
+        viewModelScope.launch {
+            _state.update { it.copy(sync = SyncState.Running(LotteryGame.EUROMILLIONS, 1, 2, 0)) }
+            val summary = repository.syncAll { progress ->
+                _state.update {
+                    it.copy(
+                        sync = SyncState.Running(
+                            game = progress.game,
+                            gameIndex = progress.gameIndex,
+                            gameCount = progress.gameCount,
+                            fetched = progress.fetched,
+                        )
+                    )
+                }
+            }
+            if (summary.failed.size == LotteryGame.entries.size) {
+                _state.update { it.copy(sync = SyncState.Error) }
+                _messages.tryEmit(AppMessage.SyncFailed)
+                return@launch
+            }
+            val draws = repository.loadAll()
+            val stats = draws.mapValues { (game, list) -> computeStats(game, list) }
+            val lastUpdates = LotteryGame.entries.associateWith { repository.prefs.lastUpdate(it) }
+            val added = summary.added.values.sum()
+            _state.update {
+                it.copy(
+                    sync = SyncState.Done(added),
+                    draws = draws,
+                    stats = stats,
+                    lastUpdates = lastUpdates,
+                )
+            }
+            _messages.tryEmit(AppMessage.SyncDone(added))
+            LotteryGame.entries.forEach { game ->
+                ensureModel(game, draws[game].orEmpty(), force = (summary.added[game] ?: 0) > 0)
+            }
+        }
+    }
+
+    /** Generates a new ticket with the chosen strategy and persists it. */
+    fun generate(game: LotteryGame, strategy: Strategy, bets: Int) {
+        viewModelScope.launch {
+            val draws = _state.value.draws[game].orEmpty()
+            if (draws.isEmpty()) {
+                _messages.tryEmit(AppMessage.NotEnoughHistory)
+                return@launch
+            }
+            val model = if (strategy == Strategy.AI) modelFor(game) else null
+            val ticket = withContext(Dispatchers.Default) {
+                TicketGenerator.generate(
+                    game = game,
+                    history = draws,
+                    strategy = strategy,
+                    bets = bets,
+                    date = IsoDate.today(),
+                    model = model,
+                )
+            }
+            repository.saveTicket(ticket)
+            _state.update {
+                it.copy(
+                    tickets = it.tickets + (game to ticket),
+                    checks = it.checks - game,
+                )
+            }
+        }
+    }
+
+    private suspend fun modelFor(game: LotteryGame): AiModel? {
+        val current = _state.value.models[game]
+        if (current is ModelState.Ready) return current.model
+        ensureModel(game, _state.value.draws[game].orEmpty(), force = true)
+        return (_state.value.models[game] as? ModelState.Ready)?.model
+    }
+
+    /** Checks the current ticket of a game against the whole stored history. */
+    fun check(game: LotteryGame) {
+        viewModelScope.launch {
+            val ticket = _state.value.tickets[game] ?: return@launch
+            val draws = _state.value.draws[game].orEmpty()
+            val outcome = withContext(Dispatchers.Default) { checkLines(game, ticket.lines, draws) }
+            _state.update { it.copy(checks = it.checks + (game to outcome)) }
+        }
+    }
+
+    /** Notifies the UI that the ticket was copied to the clipboard. */
+    fun notifyCopied() {
+        _messages.tryEmit(AppMessage.TicketCopied)
+    }
+
+    /** Runs the walk-forward comparison of every strategy. */
+    fun compare(game: LotteryGame, window: Int, bets: Int) {
+        if (_state.value.comparison is ComparisonState.Running) return
+        viewModelScope.launch {
+            val draws = _state.value.draws[game].orEmpty()
+            _state.update { it.copy(comparison = ComparisonState.Running(0f)) }
+            val results = withContext(Dispatchers.Default) {
+                Backtester.run(game, draws, window, bets) { fraction ->
+                    _state.value = _state.value.copy(comparison = ComparisonState.Running(fraction))
+                }
+            }
+            _state.update {
+                it.copy(
+                    comparison = if (results.isEmpty()) {
+                        ComparisonState.Error
+                    } else {
+                        ComparisonState.Done(results, window, bets)
+                    }
+                )
+            }
+        }
+    }
+}

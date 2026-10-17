@@ -1,0 +1,119 @@
+<resources>
+    <string name="app_name">Boleto</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_history">History</string>
+    <string name="nav_stats">Statistics</string>
+    <string name="nav_play">Play</string>
+
+    <!-- Games -->
+    <string name="game_euromillions">EuroMillions</string>
+    <string name="game_primitiva">La Primitiva</string>
+
+    <!-- Home -->
+    <string name="home_tagline">Generate your tickets with official draw history</string>
+    <string name="home_latest_draws">Latest draws</string>
+    <string name="home_history_data">History data</string>
+    <string name="home_update">Update history</string>
+    <string name="home_updating">Updating…</string>
+    <string name="home_draws_count">%1$d draws</string>
+    <string name="home_range">From %1$s to %2$s</string>
+    <string name="home_last_update">Last update: %1$s</string>
+    <string name="home_never_updated">Not updated yet</string>
+    <string name="home_next_draw">Next draw</string>
+    <string name="home_quick_play">Generate a ticket</string>
+    <string name="home_up_to_date">History updated · +%1$d draws</string>
+    <string name="home_update_error">Could not update: %1$s</string>
+    <string name="home_welcome_hint">The full draw history is bundled and kept up to date from the official source.</string>
+    <string name="home_draw_number">Draw %1$s</string>
+    <string name="home_jackpot">Jackpot %1$s</string>
+    <string name="home_next_draw_value">%1$s · %2$s</string>
+
+    <!-- History -->
+    <string name="history_title">History</string>
+    <string name="history_filter_number">Filter by number</string>
+    <string name="history_filter_clear">Clear</string>
+    <string name="history_empty">No draws stored. Update the history.</string>
+    <string name="history_no_results">No draw contains that number.</string>
+    <string name="history_complementario">Complementary</string>
+    <string name="history_reintegro">Refund</string>
+    <string name="history_stars">Stars</string>
+    <string name="history_jackpot">Jackpot</string>
+
+    <!-- Statistics -->
+    <string name="stats_frequency">Main number frequency</string>
+    <string name="stats_stars_frequency">Star frequency</string>
+    <string name="stats_hot">Hot numbers</string>
+    <string name="stats_cold">Cold numbers</string>
+    <string name="stats_most_overdue">Most overdue</string>
+    <string name="stats_delay">%1$d draws ago</string>
+    <string name="stats_draws_analyzed">Draws analysed</string>
+    <string name="stats_times">%1$d times</string>
+    <string name="stats_frequency_hint">How often each number has been drawn in the stored history.</string>
+    <string name="stats_delay_hint">Number of draws since each number last appeared.</string>
+
+    <!-- Play -->
+    <string name="play_title">Generate ticket</string>
+    <string name="play_strategy">Strategy</string>
+    <string name="play_strategy_random">Random</string>
+    <string name="play_strategy_hot">Hot</string>
+    <string name="play_strategy_cold">Cold</string>
+    <string name="play_strategy_balanced">Balanced</string>
+    <string name="play_strategy_ai">AI model</string>
+    <string name="play_bets">Bets</string>
+    <string name="play_generate">Generate ticket</string>
+    <string name="play_regenerate">New ticket</string>
+    <string name="play_share">Share</string>
+    <string name="play_copy">Copy</string>
+    <string name="play_copied">Ticket copied to clipboard</string>
+    <string name="play_ticket_title">TICKET</string>
+    <string name="play_bet_number">Bet %1$d</string>
+    <string name="play_ai_info_title">Local AI model</string>
+    <string name="play_ai_info_body">A logistic regression trained on your device with the stored history. It learns historical patterns — draws are random, so this does not increase your real odds.</string>
+    <string name="play_ai_trained">Trained on %1$d draws · hold-out accuracy %2$s (random %3$s)</string>
+    <string name="play_ai_training">Training model…</string>
+    <string name="play_ai_unavailable">Not enough history to train the model yet.</string>
+    <string name="play_check">Check against history</string>
+    <string name="play_check_result">With this combination, in %1$d draws you would have won:</string>
+    <string name="play_no_prizes">It would never have won a prize.</string>
+    <string name="play_compare">Compare strategies</string>
+    <string name="play_share_subject">My Boleto ticket</string>
+
+    <!-- Prize categories -->
+    <string name="prize_especial">Special</string>
+    <string name="prize_1">1st</string>
+    <string name="prize_2">2nd</string>
+    <string name="prize_3">3rd</string>
+    <string name="prize_4">4th</string>
+    <string name="prize_5">5th</string>
+    <string name="prize_refund">Refund</string>
+    <string name="prize_category">Category %1$s</string>
+
+    <!-- Compare -->
+    <string name="compare_title">Compare strategies</string>
+    <string name="compare_intro">Each strategy is evaluated over the last %1$d draws, generating %2$d bets per draw and using only the data available before each draw.</string>
+    <string name="compare_strategy">Strategy</string>
+    <string name="compare_avg_hits">Avg. hits</string>
+    <string name="compare_prize_rate">Draws with prize</string>
+    <string name="compare_best">Best</string>
+    <string name="compare_run">Run comparison</string>
+    <string name="compare_running">Evaluating… %1$d%%</string>
+    <string name="compare_disclaimer">Draws are independent and random: no strategy improves your real probability of winning. This comparison shows observed historical behaviour.</string>
+    <string name="compare_ai_note">The AI model is trained only on data prior to the evaluated window (hold-out), so the results are honest.</string>
+    <string name="compare_window">Evaluation window</string>
+    <string name="compare_bets">Bets per draw</string>
+
+    <!-- Generic -->
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_ok">OK</string>
+    <string name="error_network">Network error</string>
+    <string name="loading">Loading…</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_logo">Boleto logo</string>
+    <string name="cd_ball_number">Number %1$d</string>
+    <string name="cd_star_number">Star %1$d</string>
+</resources>

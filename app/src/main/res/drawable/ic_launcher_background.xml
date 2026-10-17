@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Deep violet gradient background -->
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="108"
+                android:endY="108"
+                android:type="linear">
+                <item android:offset="0" android:color="#FF3B2A8C" />
+                <item android:offset="0.55" android:color="#FF241A63" />
+                <item android:offset="1" android:color="#FF140F38" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Soft glow -->
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="30"
+                android:centerY="26"
+                android:gradientRadius="74"
+                android:type="radial">
+                <item android:offset="0" android:color="#40FFFFFF" />
+                <item android:offset="1" android:color="#00FFFFFF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Faint stars -->
+    <path
+        android:fillColor="#33FFFFFF"
+        android:pathData="M22,84 Q22.6,86.4 25,87 Q22.6,87.6 22,90 Q21.4,87.6 19,87 Q21.4,86.4 22,84 Z" />
+    <path
+        android:fillColor="#26FFFFFF"
+        android:pathData="M88,20 Q88.6,22.4 91,23 Q88.6,23.6 88,26 Q87.4,23.6 85,23 Q87.4,22.4 88,20 Z" />
+</vector>

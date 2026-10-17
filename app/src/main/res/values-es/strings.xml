@@ -1,0 +1,119 @@
+<resources>
+    <string name="app_name">Boleto</string>
+
+    <!-- Navegación -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_history">Historial</string>
+    <string name="nav_stats">Estadísticas</string>
+    <string name="nav_play">Jugar</string>
+
+    <!-- Juegos -->
+    <string name="game_euromillions">Euromillones</string>
+    <string name="game_primitiva">La Primitiva</string>
+
+    <!-- Inicio -->
+    <string name="home_tagline">Genera tus boletos con el histórico oficial de sorteos</string>
+    <string name="home_latest_draws">Últimos sorteos</string>
+    <string name="home_history_data">Datos históricos</string>
+    <string name="home_update">Actualizar histórico</string>
+    <string name="home_updating">Actualizando…</string>
+    <string name="home_draws_count">%1$d sorteos</string>
+    <string name="home_range">Desde %1$s hasta %2$s</string>
+    <string name="home_last_update">Última actualización: %1$s</string>
+    <string name="home_never_updated">Sin actualizar todavía</string>
+    <string name="home_next_draw">Próximo sorteo</string>
+    <string name="home_quick_play">Generar un boleto</string>
+    <string name="home_up_to_date">Histórico actualizado · +%1$d sorteos</string>
+    <string name="home_update_error">No se pudo actualizar: %1$s</string>
+    <string name="home_welcome_hint">El histórico completo viene incluido y se mantiene al día desde la fuente oficial.</string>
+    <string name="home_draw_number">Sorteo %1$s</string>
+    <string name="home_jackpot">Bote %1$s</string>
+    <string name="home_next_draw_value">%1$s · %2$s</string>
+
+    <!-- Historial -->
+    <string name="history_title">Historial</string>
+    <string name="history_filter_number">Filtrar por número</string>
+    <string name="history_filter_clear">Limpiar</string>
+    <string name="history_empty">No hay sorteos guardados. Actualiza el histórico.</string>
+    <string name="history_no_results">Ningún sorteo contiene ese número.</string>
+    <string name="history_complementario">Complementario</string>
+    <string name="history_reintegro">Reintegro</string>
+    <string name="history_stars">Estrellas</string>
+    <string name="history_jackpot">Bote</string>
+
+    <!-- Estadísticas -->
+    <string name="stats_frequency">Frecuencia de números</string>
+    <string name="stats_stars_frequency">Frecuencia de estrellas</string>
+    <string name="stats_hot">Números calientes</string>
+    <string name="stats_cold">Números fríos</string>
+    <string name="stats_most_overdue">Más retrasados</string>
+    <string name="stats_delay">Hace %1$d sorteos</string>
+    <string name="stats_draws_analyzed">Sorteos analizados</string>
+    <string name="stats_times">%1$d veces</string>
+    <string name="stats_frequency_hint">Cuántas veces ha salido cada número en el histórico guardado.</string>
+    <string name="stats_delay_hint">Número de sorteos desde la última aparición de cada número.</string>
+
+    <!-- Jugar -->
+    <string name="play_title">Generar boleto</string>
+    <string name="play_strategy">Estrategia</string>
+    <string name="play_strategy_random">Aleatoria</string>
+    <string name="play_strategy_hot">Calientes</string>
+    <string name="play_strategy_cold">Fríos</string>
+    <string name="play_strategy_balanced">Equilibrada</string>
+    <string name="play_strategy_ai">Modelo IA</string>
+    <string name="play_bets">Apuestas</string>
+    <string name="play_generate">Generar boleto</string>
+    <string name="play_regenerate">Nuevo boleto</string>
+    <string name="play_share">Compartir</string>
+    <string name="play_copy">Copiar</string>
+    <string name="play_copied">Boleto copiado al portapapeles</string>
+    <string name="play_ticket_title">BOLETO</string>
+    <string name="play_bet_number">Apuesta %1$d</string>
+    <string name="play_ai_info_title">Modelo de IA local</string>
+    <string name="play_ai_info_body">Una regresión logística entrenada en tu dispositivo con el histórico guardado. Aprende patrones históricos; los sorteos son aleatorios, así que esto no aumenta tus probabilidades reales.</string>
+    <string name="play_ai_trained">Entrenado con %1$d sorteos · precisión hold-out %2$s (azar %3$s)</string>
+    <string name="play_ai_training">Entrenando modelo…</string>
+    <string name="play_ai_unavailable">Todavía no hay suficiente histórico para entrenar el modelo.</string>
+    <string name="play_check">Comprobar en el histórico</string>
+    <string name="play_check_result">Con esta combinación, en %1$d sorteos habrías ganado:</string>
+    <string name="play_no_prizes">Nunca habría ganado un premio.</string>
+    <string name="play_compare">Comparar estrategias</string>
+    <string name="play_share_subject">Mi boleto de Boleto</string>
+
+    <!-- Categorías de premio -->
+    <string name="prize_especial">Especial</string>
+    <string name="prize_1">1ª</string>
+    <string name="prize_2">2ª</string>
+    <string name="prize_3">3ª</string>
+    <string name="prize_4">4ª</string>
+    <string name="prize_5">5ª</string>
+    <string name="prize_refund">Reintegro</string>
+    <string name="prize_category">Categoría %1$s</string>
+
+    <!-- Comparar -->
+    <string name="compare_title">Comparar estrategias</string>
+    <string name="compare_intro">Cada estrategia se evalúa sobre los últimos %1$d sorteos, generando %2$d apuestas por sorteo y usando solo los datos disponibles antes de cada sorteo.</string>
+    <string name="compare_strategy">Estrategia</string>
+    <string name="compare_avg_hits">Media de aciertos</string>
+    <string name="compare_prize_rate">Sorteos con premio</string>
+    <string name="compare_best">Mejor</string>
+    <string name="compare_run">Ejecutar comparación</string>
+    <string name="compare_running">Evaluando… %1$d%%</string>
+    <string name="compare_disclaimer">Los sorteos son independientes y aleatorios: ninguna estrategia mejora la probabilidad real de ganar. Esta comparación muestra el comportamiento histórico observado.</string>
+    <string name="compare_ai_note">El modelo de IA se entrena solo con datos anteriores a la ventana evaluada (hold-out), para que los resultados sean honestos.</string>
+    <string name="compare_window">Ventana de evaluación</string>
+    <string name="compare_bets">Apuestas por sorteo</string>
+
+    <!-- Genéricos -->
+    <string name="action_back">Atrás</string>
+    <string name="action_close">Cerrar</string>
+    <string name="action_retry">Reintentar</string>
+    <string name="action_ok">Aceptar</string>
+    <string name="error_network">Error de red</string>
+    <string name="loading">Cargando…</string>
+
+    <!-- Descripciones de contenido -->
+    <string name="cd_logo">Logotipo de Boleto</string>
+    <string name="cd_ball_number">Número %1$d</string>
+    <string name="cd_star_number">Estrella %1$d</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand -->
+    <color name="brand_primary">#4A3FD6</color>
+    <color name="brand_primary_dark">#2A1E8F</color>
+    <color name="brand_gold">#F2B705</color>
+    <color name="brand_green">#0F7B4F</color>
+
+    <!-- Window / splash background -->
+    <color name="brand_window_background">#17142E</color>
+
+    <!-- Game accents -->
+    <color name="game_euromillions">#2B4FE0</color>
+    <color name="game_euromillions_star">#F2B705</color>
+    <color name="game_primitiva">#0F7B4F</color>
+    <color name="game_primitiva_extra">#5A6072</color>
+    <color name="game_primitiva_refund">#C62828</color>
+</resources>

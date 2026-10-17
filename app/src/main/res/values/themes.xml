@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Boleto" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/brand_window_background</item>
+    </style>
+
+    <style name="Theme.Boleto.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/brand_window_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.Boleto</item>
+    </style>
+
+</resources>
