@@ -21,6 +21,12 @@ enum class LotteryGame(
     val hasComplementary: Boolean,
     /** La Primitiva draws a refund digit (0..9). */
     val hasRefund: Boolean,
+    /** Associated Joker game: a 7-digit code, 1 € extra per ticket (La Primitiva). */
+    val hasJoker: Boolean,
+    /** Official price of one bet, in euro cents. */
+    val betPriceCents: Int,
+    /** Official price of the Joker per draw, in euro cents (0 = no Joker). */
+    val jokerPriceCents: Int,
     /** Earliest date available in the official archive. */
     val firstDate: String,
     /** ISO days of week the game is drawn (1 = Monday … 7 = Sunday). */
@@ -36,6 +42,9 @@ enum class LotteryGame(
         starMax = 12,
         hasComplementary = false,
         hasRefund = false,
+        hasJoker = false,
+        betPriceCents = 250, // includes the associated "El Millón" game
+        jokerPriceCents = 0,
         firstDate = "2004-02-13",
         drawDays = setOf(2, 5), // Tuesday & Friday
     ),
@@ -49,6 +58,9 @@ enum class LotteryGame(
         starMax = 0,
         hasComplementary = true,
         hasRefund = true,
+        hasJoker = true,
+        betPriceCents = 100,
+        jokerPriceCents = 100,
         firstDate = "1985-10-17",
         drawDays = setOf(1, 4, 6), // Monday, Thursday & Saturday
     );
@@ -71,6 +83,8 @@ data class Draw(
     val refund: Int? = null,
     /** Estimated jackpot for the draw, in euros. */
     val jackpot: Long? = null,
+    /** Winning Joker code of the draw (7 digits), La Primitiva only. */
+    val joker: String? = null,
 )
 
 /** One bet inside a ticket. */
@@ -86,13 +100,58 @@ data class Boleto(
     val lines: List<TicketLine>,
     val strategy: Strategy,
     val createdAt: String,
+    /** Joker code of the ticket (7 digits), La Primitiva only. */
+    val joker: String? = null,
+    /** Draws the ticket takes part in (ISO dates, chronological). */
+    val drawDates: List<String> = emptyList(),
 )
 
 /** How the numbers are picked. */
 enum class Strategy {
+    /** Uniform chance: every combination is equally likely. */
     RANDOM,
+
+    /** Favours the most frequent numbers of the last 50 draws. */
     HOT,
+
+    /** Favours the numbers that went longest without appearing. */
     COLD,
+
+    /** Mix of recent-hot and overdue numbers, filled with uniform picks. */
     BALANCED,
+
+    /**
+     * Bayesian frequency estimate: recency-weighted appearance counts
+     * (exponential decay) smoothed with a symmetric Dirichlet prior.
+     */
+    BAYES,
+
+    /**
+     * First-order co-occurrence model: scores every number by how often it
+     * appeared right after the numbers of the last draw (Laplace-smoothed
+     * conditional probabilities).
+     */
+    MARKOV,
+
+    /** Logistic regression trained on-device with the stored history. */
     AI,
+
+    /**
+     * Ensemble that blends the trained AI model, the Bayesian estimate and
+     * the Markov model into a single probability per number. Missing
+     * components are dropped and the remaining weights renormalised.
+     */
+    HYBRID,
+
+    /**
+     * Expected-value picker: same odds of winning as any other strategy, but
+     * avoids the numbers everybody plays (birthdays, popular patterns) to
+     * reduce the chance of sharing a prize, and keeps the structure of a
+     * typical historical draw (sum window, odd/even balance, consecutives,
+     * decades).
+     */
+    SMART;
+
+    /** True when the strategy needs the on-device trained model. */
+    fun usesAiModel(): Boolean = this == AI || this == HYBRID
 }

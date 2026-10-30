@@ -114,6 +114,7 @@ class BoletoLogicTest {
     @Test
     fun `every strategy generates valid tickets`() {
         val draws = syntheticDraws(LotteryGame.PRIMITIVA, 600)
+        val model = AiTrainer.train(LotteryGame.PRIMITIVA, draws)
         Strategy.entries.forEach { strategy ->
             val ticket = TicketGenerator.generate(
                 game = LotteryGame.PRIMITIVA,
@@ -121,7 +122,7 @@ class BoletoLogicTest {
                 strategy = strategy,
                 bets = 3,
                 date = "2026-10-17",
-                model = if (strategy == Strategy.AI) AiTrainer.train(LotteryGame.PRIMITIVA, draws) else null,
+                model = if (strategy.usesAiModel()) model else null,
                 random = Random(42),
             )
             assertEquals(3, ticket.lines.size)
@@ -137,20 +138,24 @@ class BoletoLogicTest {
     @Test
     fun `euro millions tickets include two distinct stars`() {
         val draws = syntheticDraws(LotteryGame.EUROMILLIONS, 600)
-        val ticket = TicketGenerator.generate(
-            game = LotteryGame.EUROMILLIONS,
-            history = draws,
-            strategy = Strategy.BALANCED,
-            bets = 2,
-            date = "2026-10-17",
-            random = Random(7),
-        )
-        ticket.lines.forEach { line ->
-            assertEquals(5, line.numbers.size)
-            assertEquals(2, line.stars.size)
-            assertEquals(2, line.stars.toSet().size)
-            assertTrue(line.stars.all { it in 1..12 })
-            assertNull(line.refund)
+        Strategy.entries.forEach { strategy ->
+            val ticket = TicketGenerator.generate(
+                game = LotteryGame.EUROMILLIONS,
+                history = draws,
+                strategy = strategy,
+                bets = 2,
+                date = "2026-10-17",
+                random = Random(7),
+            )
+            ticket.lines.forEach { line ->
+                assertEquals(5, line.numbers.size)
+                assertEquals(5, line.numbers.toSet().size)
+                assertTrue(line.numbers.all { it in 1..50 })
+                assertEquals(2, line.stars.size)
+                assertEquals(2, line.stars.toSet().size)
+                assertTrue(line.stars.all { it in 1..12 })
+                assertNull(line.refund)
+            }
         }
     }
 

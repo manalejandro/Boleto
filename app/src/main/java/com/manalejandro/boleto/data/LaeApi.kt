@@ -30,6 +30,7 @@ class LaeApi {
             if (date.length != 10) continue
             val parsed = parseCombinacion(game, item.optString("combinacion")) ?: continue
             val jackpot = item.optString("premio_bote").trim().toLongOrNull()?.takeIf { it > 0 }
+            val joker = if (game.hasJoker) parseJoker(item.optJSONObject("joker")?.optString("combinacion")) else null
             draws += Draw(
                 game = game,
                 date = date,
@@ -38,6 +39,7 @@ class LaeApi {
                 complementary = parsed.complementary,
                 refund = parsed.refund,
                 jackpot = jackpot,
+                joker = joker,
             )
         }
         return draws
@@ -71,6 +73,14 @@ class LaeApi {
         private val NUMBER_REGEX = Regex("\\d+")
         private val COMPLEMENTARY_REGEX = Regex("C\\(\\s*(\\d*)\\s*\\)")
         private val REFUND_REGEX = Regex("R\\(\\s*(\\d*)\\s*\\)")
+
+        /**
+         * Normalises the winning Joker code: exactly 7 digits, leading zeros
+         * are significant. The Joker game started in September 2012, so older
+         * draws simply return `null`.
+         */
+        fun parseJoker(raw: String?): String? =
+            raw?.trim()?.takeIf { it.length == 7 && it.all(Char::isDigit) }
 
         /**
          * Parses strings such as:

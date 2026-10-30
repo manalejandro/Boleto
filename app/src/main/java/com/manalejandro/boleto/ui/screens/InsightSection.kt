@@ -85,6 +85,12 @@ fun InsightSection(
             } ?: numbers
             stringResource(R.string.ai_prompt_bet_line, index + 1, withRefund)
         },
+        jokerLine = ticket.joker?.let { joker ->
+            stringResource(R.string.ai_prompt_joker, joker)
+        },
+        drawsLine = ticket.drawDates.takeIf { it.isNotEmpty() }?.let { dates ->
+            stringResource(R.string.ai_prompt_draws, dates.joinToString(", "))
+        },
         historyLine = stats?.let { summary ->
             stringResource(
                 R.string.ai_prompt_history,

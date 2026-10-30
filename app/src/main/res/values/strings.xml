@@ -60,7 +60,20 @@
     <string name="play_strategy_hot">Hot</string>
     <string name="play_strategy_cold">Cold</string>
     <string name="play_strategy_balanced">Balanced</string>
+    <string name="play_strategy_bayes">Bayes</string>
+    <string name="play_strategy_markov">Markov</string>
     <string name="play_strategy_ai">AI model</string>
+    <string name="play_strategy_hybrid">Hybrid AI</string>
+    <string name="play_strategy_smart">Smart payout</string>
+    <string name="play_strategy_desc_random">Uniform chance: every combination is equally likely. Draws are random, so this is as good a pick as any.</string>
+    <string name="play_strategy_desc_hot">Favours the numbers that appeared most often in the last 50 draws.</string>
+    <string name="play_strategy_desc_cold">Favours the numbers that have gone the most draws without appearing.</string>
+    <string name="play_strategy_desc_balanced">Mixes recently hot and long-overdue numbers, and fills the rest at random.</string>
+    <string name="play_strategy_desc_bayes">Bayesian estimate of each number: recency-weighted appearances smoothed with a Dirichlet prior, so recent form counts more without ever ruling a number out.</string>
+    <string name="play_strategy_desc_markov">Co-occurrence model conditioned on the last draw: scores each number by how often it appeared right after the numbers just drawn (Laplace-smoothed probabilities).</string>
+    <string name="play_strategy_desc_ai">Logistic regression trained on your device with the stored history: rolling frequencies, delay and seasonality.</string>
+    <string name="play_strategy_desc_hybrid">Ensemble that blends the local AI model, the Bayesian estimate and the Markov model into a single probability per number. Missing parts are renormalised automatically.</string>
+    <string name="play_strategy_desc_smart">Same odds of winning, better expected payout: avoids birthdays and popular patterns so prizes are shared with fewer people, and discards implausible structures (extreme sums, odd/even imbalance, number pile-ups).</string>
     <string name="play_bets">Bets</string>
     <string name="play_generate">Generate ticket</string>
     <string name="play_regenerate">New ticket</string>
@@ -104,6 +117,26 @@
     <string name="compare_window">Evaluation window</string>
     <string name="compare_bets">Bets per draw</string>
 
+    <!-- Joker (La Primitiva) -->
+    <string name="play_joker">Joker</string>
+    <string name="play_joker_hint">+1 € per ticket. The system assigns a random 7-digit code for the same draw.</string>
+    <string name="play_joker_code">Joker code</string>
+    <string name="check_total">Total</string>
+    <string name="joker_prize_1">1st (7 digits)</string>
+    <string name="joker_prize_2">2nd (6 first or last digits)</string>
+    <string name="joker_prize_3">3rd (5 first or last digits)</string>
+    <string name="joker_prize_4">4th (4 first or last digits)</string>
+    <string name="joker_prize_5">5th (3 first or last digits)</string>
+    <string name="joker_prize_6">6th (2 first or last digits)</string>
+    <string name="joker_prize_7">7th (first or last digit)</string>
+
+    <!-- Draws and price -->
+    <string name="play_draws">Draws</string>
+    <string name="play_draws_hint">The same combination plays in every selected draw.</string>
+    <string name="play_total">Total</string>
+    <string name="play_price_note">Official SELAE price</string>
+    <string name="ticket_draws">Draws: %1$s</string>
+
     <!-- On-device AI (Gemini Nano) -->
     <string name="ai_insight_title">On-device AI analysis</string>
     <string name="ai_insight_badge">Gemini Nano · runs on your phone</string>
@@ -125,6 +158,8 @@
     <string name="ai_prompt_bets">Bets:</string>
     <string name="ai_prompt_bet_line">%1$d) %2$s</string>
     <string name="ai_prompt_bet_refund">%1$s · refund %2$d</string>
+    <string name="ai_prompt_joker">Joker code: %1$s</string>
+    <string name="ai_prompt_draws">Draws played: %1$s</string>
     <string name="ai_prompt_history">Verified archive: %1$s draws (%2$s to %3$s)</string>
     <string name="ai_prompt_hot">Most frequent main numbers: %1$s</string>
     <string name="ai_prompt_cold">Least frequent main numbers: %1$s</string>

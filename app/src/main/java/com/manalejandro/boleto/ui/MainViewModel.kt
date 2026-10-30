@@ -189,14 +189,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** Generates a new ticket with the chosen strategy and persists it. */
-    fun generate(game: LotteryGame, strategy: Strategy, bets: Int) {
+    fun generate(
+        game: LotteryGame,
+        strategy: Strategy,
+        bets: Int,
+        withJoker: Boolean = false,
+        drawsCount: Int = 1,
+    ) {
         viewModelScope.launch {
             val draws = _state.value.draws[game].orEmpty()
             if (draws.isEmpty()) {
                 _messages.tryEmit(AppMessage.NotEnoughHistory)
                 return@launch
             }
-            val model = if (strategy == Strategy.AI) modelFor(game) else null
+            val model = if (strategy.usesAiModel()) modelFor(game) else null
             val ticket = withContext(Dispatchers.Default) {
                 TicketGenerator.generate(
                     game = game,
@@ -205,6 +211,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     bets = bets,
                     date = IsoDate.today(),
                     model = model,
+                    withJoker = withJoker,
+                    drawsCount = drawsCount,
                 )
             }
             repository.saveTicket(ticket)
@@ -230,7 +238,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val ticket = _state.value.tickets[game] ?: return@launch
             val draws = _state.value.draws[game].orEmpty()
-            val outcome = withContext(Dispatchers.Default) { checkLines(game, ticket.lines, draws) }
+            val outcome = withContext(Dispatchers.Default) {
+                checkLines(game, ticket.lines, draws, ticket.joker)
+            }
             _state.update { it.copy(checks = it.checks + (game to outcome)) }
         }
     }

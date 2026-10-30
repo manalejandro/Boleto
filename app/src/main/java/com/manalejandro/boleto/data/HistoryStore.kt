@@ -18,9 +18,9 @@ class HistoryStore(private val context: Context) {
     private fun fileFor(game: LotteryGame) = File(context.filesDir, game.assetName)
 
     /** Copies the bundled archive to internal storage the first time. */
-    fun seedIfNeeded(game: LotteryGame) {
+    fun seedIfNeeded(game: LotteryGame, force: Boolean = false) {
         val file = fileFor(game)
-        if (file.exists() && file.length() > 0) return
+        if (!force && file.exists() && file.length() > 0) return
         try {
             context.assets.open(game.assetName).use { input ->
                 file.outputStream().use { output -> input.copyTo(output) }
@@ -74,6 +74,11 @@ class HistoryStore(private val context: Context) {
                 val jackpotIndex = 1 + game.mainCount + game.starCount +
                     (if (game.hasComplementary) 1 else 0) + (if (game.hasRefund) 1 else 0)
                 val jackpot = parts.getOrNull(jackpotIndex)?.toLongOrNull()?.takeIf { it > 0 }
+                val joker = if (game.hasJoker) {
+                    LaeApi.parseJoker(parts.getOrNull(jackpotIndex + 1))
+                } else {
+                    null
+                }
                 draws += Draw(
                     game = game,
                     date = date,
@@ -82,13 +87,14 @@ class HistoryStore(private val context: Context) {
                     complementary = complementary,
                     refund = refund,
                     jackpot = jackpot,
+                    joker = joker,
                 )
             }
             return draws
         }
 
         fun formatCsv(game: LotteryGame, draws: List<Draw>): String {
-            val builder = StringBuilder(draws.size * 32)
+            val builder = StringBuilder(draws.size * 40)
             for (draw in draws) {
                 builder.append(draw.date)
                 draw.numbers.forEach { builder.append(';').append(it.toString().padStart(2, '0')) }
@@ -96,6 +102,7 @@ class HistoryStore(private val context: Context) {
                 if (game.hasComplementary) builder.append(';').append(draw.complementary?.toString() ?: "")
                 if (game.hasRefund) builder.append(';').append(draw.refund?.toString() ?: "")
                 builder.append(';').append(draw.jackpot?.toString() ?: "")
+                if (game.hasJoker) builder.append(';').append(draw.joker ?: "")
                 builder.append('\n')
             }
             return builder.toString()

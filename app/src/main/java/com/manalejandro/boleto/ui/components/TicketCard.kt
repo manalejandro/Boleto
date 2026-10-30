@@ -30,13 +30,16 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.manalejandro.boleto.R
+import com.manalejandro.boleto.core.Formats
 import com.manalejandro.boleto.core.IsoDate
 import com.manalejandro.boleto.data.Boleto
 import com.manalejandro.boleto.data.LotteryGame
+import com.manalejandro.boleto.domain.TicketCost
 import com.manalejandro.boleto.ui.theme.TicketInk
 import com.manalejandro.boleto.ui.theme.TicketInkSoft
 import com.manalejandro.boleto.ui.theme.TicketPaper
@@ -147,9 +150,63 @@ fun TicketCard(boleto: Boleto, modifier: Modifier = Modifier) {
                         }
                     }
                 }
+
+                boleto.joker?.let { joker ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(R.string.play_joker_code),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TicketInkSoft,
+                            modifier = Modifier.width(58.dp),
+                        )
+                        Text(
+                            text = joker,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontFamily = FontFamily.Monospace,
+                            letterSpacing = 4.sp,
+                            color = TicketInk,
+                        )
+                    }
+                }
             }
 
             PerforationRow(background)
+
+            val totalCents = TicketCost.totalCents(
+                game = boleto.game,
+                bets = boleto.lines.size,
+                draws = boleto.drawDates.size.coerceAtLeast(1),
+                withJoker = boleto.joker != null,
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp)
+                    .padding(bottom = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (boleto.drawDates.isNotEmpty()) {
+                    Text(
+                        text = stringResource(
+                            R.string.ticket_draws,
+                            boleto.drawDates.joinToString(" · ") {
+                                IsoDate.formatDisplay(it, locale, "d MMM")
+                            },
+                        ),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TicketInkSoft,
+                        modifier = Modifier.weight(1f),
+                    )
+                } else {
+                    Spacer(Modifier.weight(1f))
+                }
+                Text(
+                    text = Formats.eurosFromCents(totalCents.toLong(), locale),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = TicketInk,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
 
             Row(
                 modifier = Modifier

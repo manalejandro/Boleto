@@ -37,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -61,6 +62,9 @@ import com.manalejandro.boleto.data.Boleto
 import com.manalejandro.boleto.data.LotteryGame
 import com.manalejandro.boleto.data.Strategy
 import com.manalejandro.boleto.domain.CheckOutcome
+import com.manalejandro.boleto.domain.DrawSchedule
+import com.manalejandro.boleto.domain.JokerRules
+import com.manalejandro.boleto.domain.TicketCost
 import com.manalejandro.boleto.ui.ModelState
 import com.manalejandro.boleto.ui.UiState
 import com.manalejandro.boleto.ui.components.GameSegmentedSelector
@@ -68,7 +72,9 @@ import com.manalejandro.boleto.ui.components.KeyValueRow
 import com.manalejandro.boleto.ui.components.SectionCard
 import com.manalejandro.boleto.ui.components.SectionTitle
 import com.manalejandro.boleto.ui.components.TicketCard
+import com.manalejandro.boleto.ui.components.description
 import com.manalejandro.boleto.ui.components.icon
+import com.manalejandro.boleto.ui.components.jokerPrizeLabel
 import com.manalejandro.boleto.ui.components.label
 import com.manalejandro.boleto.ui.components.prizeLabel
 import java.util.Locale
@@ -77,7 +83,7 @@ import java.util.Locale
 @Composable
 fun GenerateScreen(
     state: UiState,
-    onGenerate: (LotteryGame, Strategy, Int) -> Unit,
+    onGenerate: (LotteryGame, Strategy, Int, Boolean, Int) -> Unit,
     onCheck: (LotteryGame) -> Unit,
     onCompare: () -> Unit,
     onShare: (String) -> Unit,
@@ -90,22 +96,39 @@ fun GenerateScreen(
     var game by rememberSaveable { mutableStateOf(LotteryGame.EUROMILLIONS) }
     var strategy by rememberSaveable { mutableStateOf(Strategy.RANDOM) }
     var bets by rememberSaveable { mutableIntStateOf(1) }
+    var withJoker by rememberSaveable { mutableStateOf(false) }
+    var drawsCount by rememberSaveable { mutableIntStateOf(1) }
     val locale = LocalConfiguration.current.locales[0]
 
     val maxBets = if (game == LotteryGame.PRIMITIVA) 8 else 5
+    val maxDraws = remember(game) { DrawSchedule.remainingThisWeek(game) }
     val ticket = state.tickets[game]
     val modelState = state.models[game]
     val check = state.checks[game]
-    val drawsCount = state.draws[game].orEmpty().size
+    val storedDraws = state.draws[game].orEmpty().size
     val gameLabel = game.label()
 
     LaunchedEffect(game) {
         if (bets > maxBets) bets = maxBets
+        if (!game.hasJoker) withJoker = false
+        if (drawsCount > maxDraws) drawsCount = maxDraws
     }
+
+    val drawDates = remember(game, drawsCount) {
+        DrawSchedule.nextDraws(game, count = drawsCount)
+    }
+    val drawDatesText = remember(drawDates, locale) {
+        drawDates.joinToString(" · ") { IsoDate.formatDisplay(it, locale, "EEE d MMM") }
+    }
+    val totalCents = TicketCost.totalCents(game, bets, drawsCount, withJoker)
 
     val ticketTitle = stringResource(R.string.play_ticket_title)
     val betLabels = (1..8).map { stringResource(R.string.play_bet_number, it) }
-    val shareText = ticket?.let { buildShareText(it, ticketTitle, gameLabel, betLabels) }
+    val jokerLabel = stringResource(R.string.play_joker)
+    val drawsTemplate = stringResource(R.string.ticket_draws)
+    val shareText = ticket?.let {
+        buildShareText(it, ticketTitle, gameLabel, betLabels, jokerLabel, drawsTemplate, locale)
+    }
 
     Column(
         modifier = modifier
@@ -139,6 +162,12 @@ fun GenerateScreen(
                 }
             }
 
+            Text(
+                text = strategy.description(),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
             HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -169,19 +198,99 @@ fun GenerateScreen(
                 }
             }
 
-            if (strategy == Strategy.AI) {
-                AiStatusCard(modelState = modelState, drawsCount = drawsCount, locale = locale)
+            if (game.hasJoker) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.play_joker),
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                        Text(
+                            text = stringResource(R.string.play_joker_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Switch(
+                        checked = withJoker,
+                        onCheckedChange = { withJoker = it },
+                    )
+                }
+            }
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.play_draws),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(
+                        text = drawDatesText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                if (maxDraws > 1) {
+                    FilledTonalIconButton(
+                        onClick = { if (drawsCount > 1) drawsCount-- },
+                        enabled = drawsCount > 1,
+                        modifier = Modifier.size(36.dp),
+                    ) {
+                        Icon(Icons.Rounded.Remove, contentDescription = null, modifier = Modifier.size(18.dp))
+                    }
+                    Text(
+                        text = drawsCount.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.widthIn(min = 36.dp),
+                    )
+                    FilledTonalIconButton(
+                        onClick = { if (drawsCount < maxDraws) drawsCount++ },
+                        enabled = drawsCount < maxDraws,
+                        modifier = Modifier.size(36.dp),
+                    ) {
+                        Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                    }
+                }
+            }
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.play_total),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(
+                        text = stringResource(R.string.play_price_note),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Text(
+                    text = Formats.eurosFromCents(totalCents.toLong(), locale),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+
+            if (strategy.usesAiModel()) {
+                AiStatusCard(modelState = modelState, drawsCount = storedDraws, locale = locale)
             }
 
             Button(
-                onClick = { onGenerate(game, strategy, bets) },
+                onClick = { onGenerate(game, strategy, bets, withJoker, drawsCount) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
                 shape = RoundedCornerShape(16.dp),
             ) {
                 Icon(
-                    imageVector = if (strategy == Strategy.AI) Icons.Rounded.AutoAwesome else Icons.Rounded.Casino,
+                    imageVector = if (strategy.usesAiModel()) Icons.Rounded.AutoAwesome else Icons.Rounded.Casino,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                 )
@@ -360,6 +469,25 @@ private fun CheckResultCard(outcome: CheckOutcome, game: LotteryGame, locale: Lo
                 )
             }
         }
+
+        if (outcome.jokerCategoryCounts.isNotEmpty()) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+            Text(
+                text = stringResource(R.string.play_joker),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            outcome.jokerCategoryCounts.entries.sortedBy { it.key }.forEach { (rank, count) ->
+                KeyValueRow(
+                    label = jokerPrizeLabel(rank),
+                    value = stringResource(R.string.stats_times, count) + " · " +
+                        Formats.euros(JokerRules.amountFor(rank) * count, locale),
+                )
+            }
+            KeyValueRow(
+                label = stringResource(R.string.check_total),
+                value = Formats.euros(outcome.jokerTotal, locale),
+            )
+        }
     }
 }
 
@@ -368,6 +496,9 @@ private fun buildShareText(
     title: String,
     gameLabel: String,
     betLabels: List<String>,
+    jokerLabel: String,
+    drawsTemplate: String,
+    locale: Locale,
 ): String = buildString {
     append(title).append(" · ").append(gameLabel).append('\n')
     boleto.lines.forEachIndexed { index, line ->
@@ -379,5 +510,12 @@ private fun buildShareText(
         }
         line.refund?.let { append("  R:").append(it) }
         append('\n')
+    }
+    boleto.joker?.let { joker -> append(jokerLabel).append(": ").append(joker).append('\n') }
+    if (boleto.drawDates.isNotEmpty()) {
+        val dates = boleto.drawDates.joinToString(" · ") {
+            IsoDate.formatDisplay(it, locale, "EEE d MMM")
+        }
+        append(String.format(locale, drawsTemplate, dates)).append('\n')
     }
 }.trim()

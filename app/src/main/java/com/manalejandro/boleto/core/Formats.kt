@@ -40,4 +40,14 @@ object Formats {
             decimal(bytes / 1_048_576.0, locale, 0) + " MB"
         }
     }
+
+    /** Euro amounts from cents, e.g. "2,50 €" or "12 €". */
+    fun eurosFromCents(cents: Long, locale: Locale): String {
+        val format = NumberFormat.getCurrencyInstance(locale)
+        format.currency = Currency.getInstance("EUR")
+        val decimals = if (cents % 100L == 0L) 0 else 2
+        format.minimumFractionDigits = decimals
+        format.maximumFractionDigits = decimals
+        return format.format(cents / 100.0)
+    }
 }

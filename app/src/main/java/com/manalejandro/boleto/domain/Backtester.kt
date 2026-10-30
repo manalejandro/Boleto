@@ -5,6 +5,7 @@ import com.manalejandro.boleto.data.LotteryGame
 import com.manalejandro.boleto.data.Strategy
 import com.manalejandro.boleto.domain.ai.AiTrainer
 import com.manalejandro.boleto.domain.ai.FeatureExtractor
+import com.manalejandro.boleto.domain.ai.MarkovModel
 import kotlin.random.Random
 
 /** Aggregated result of evaluating one strategy over the backtest window. */
@@ -47,9 +48,15 @@ object Backtester {
 
         val extractor = FeatureExtractor(game.mainMax)
         val starExtractor = FeatureExtractor(maxOf(game.starMax, 1))
+        val markov = MarkovModel(game.mainMax)
+        val starMarkov = if (game.starCount > 0) MarkovModel(game.starMax) else null
         for (index in 0 until trainEnd) {
             extractor.advance(draws[index].numbers)
-            if (game.starCount > 0) starExtractor.advance(draws[index].stars)
+            markov.advance(draws[index].numbers)
+            if (game.starCount > 0) {
+                starExtractor.advance(draws[index].stars)
+                starMarkov?.advance(draws[index].stars)
+            }
         }
 
         class Accumulator {
@@ -71,6 +78,8 @@ object Backtester {
                 starExtractor = starExtractor,
                 mainProbabilities = model.mainProbabilities(extractor, date),
                 starProbabilities = if (game.starCount > 0) model.starProbabilities(starExtractor, date) else null,
+                mainMarkov = markov.scores(),
+                starMarkov = starMarkov?.scores(),
             )
             strategies.forEach { strategy ->
                 val accumulator = accumulators.getValue(strategy)
@@ -88,7 +97,11 @@ object Backtester {
                 }
             }
             extractor.advance(draw.numbers)
-            if (game.starCount > 0) starExtractor.advance(draw.stars)
+            markov.advance(draw.numbers)
+            if (game.starCount > 0) {
+                starExtractor.advance(draw.stars)
+                starMarkov?.advance(draw.stars)
+            }
             onProgress((index - trainEnd + 1).toFloat() / evalWindow)
         }
 

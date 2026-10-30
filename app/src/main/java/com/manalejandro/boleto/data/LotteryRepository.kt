@@ -33,15 +33,20 @@ class LotteryRepository(private val context: Context) {
 
     /** Loads the stored history for a game, seeding from assets when needed. */
     suspend fun load(game: LotteryGame): List<Draw> = withContext(Dispatchers.IO) {
-        store.seedIfNeeded(game)
+        store.seedIfNeeded(game, force = prefs.dataVersion() < DATA_VERSION)
         store.load(game)
     }
 
     suspend fun loadAll(): Map<LotteryGame, List<Draw>> = withContext(Dispatchers.IO) {
-        LotteryGame.entries.associateWith { game ->
-            store.seedIfNeeded(game)
+        // When the bundled archive changes shape (e.g. the Joker column was
+        // added) the local copy is replaced once with the new asset.
+        val reseed = prefs.dataVersion() < DATA_VERSION
+        val draws = LotteryGame.entries.associateWith { game ->
+            store.seedIfNeeded(game, force = reseed)
             store.load(game)
         }
+        if (reseed) prefs.setDataVersion(DATA_VERSION)
+        draws
     }
 
     /**
@@ -118,5 +123,8 @@ class LotteryRepository(private val context: Context) {
     private companion object {
         /** Window size for archive walking; keeps results well below the cap. */
         const val WINDOW_DAYS = 180
+
+        /** Bump when the bundled archive format changes (2 = Joker column). */
+        const val DATA_VERSION = 2
     }
 }

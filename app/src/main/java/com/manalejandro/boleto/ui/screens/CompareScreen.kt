@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import com.manalejandro.boleto.R
 import com.manalejandro.boleto.core.Formats
 import com.manalejandro.boleto.data.LotteryGame
-import com.manalejandro.boleto.data.Strategy
 import com.manalejandro.boleto.ui.ComparisonState
 import com.manalejandro.boleto.ui.UiState
 import com.manalejandro.boleto.ui.components.GameSegmentedSelector
@@ -194,7 +193,7 @@ private fun ComparisonResults(
                         imageVector = result.strategy.icon(),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = if (result.strategy == Strategy.AI) {
+                        tint = if (result.strategy.usesAiModel()) {
                             MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
@@ -224,7 +223,7 @@ private fun ComparisonResults(
                             .fillMaxWidth((result.avgHits / maxAverage).toFloat())
                             .fillMaxHeight()
                             .background(
-                                if (result.strategy == Strategy.AI) {
+                                if (result.strategy.usesAiModel()) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
                                     game.accent

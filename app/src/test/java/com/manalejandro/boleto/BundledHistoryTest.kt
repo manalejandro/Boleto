@@ -12,7 +12,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
-
 /**
  * Validates the whole pipeline against the real archives bundled in
  * `src/main/assets` (unit tests run with the module folder as working dir).
@@ -101,6 +100,21 @@ class BundledHistoryTest {
                 assertEquals(2, line.stars.size)
             }
         }
+    }
+
+    @Test
+    fun `joker codes are stored since the game started in 2012`() {
+        val draws = load(LotteryGame.PRIMITIVA)
+        val withJoker = draws.filter { it.joker != null }
+        assertTrue("expected Joker codes in the archive", withJoker.size > 1600)
+        assertEquals("2012-09-27", withJoker.first().date)
+        withJoker.forEach { draw ->
+            assertEquals(7, draw.joker!!.length)
+            assertTrue(draw.joker!!.all(Char::isDigit))
+        }
+        assertNotNull(draws.last().joker)
+        // EuroMillones has no Joker at all
+        assertTrue(load(LotteryGame.EUROMILLIONS).all { it.joker == null })
     }
 
     @Test

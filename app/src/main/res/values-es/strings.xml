@@ -60,7 +60,20 @@
     <string name="play_strategy_hot">Calientes</string>
     <string name="play_strategy_cold">Fríos</string>
     <string name="play_strategy_balanced">Equilibrada</string>
+    <string name="play_strategy_bayes">Bayes</string>
+    <string name="play_strategy_markov">Markov</string>
     <string name="play_strategy_ai">Modelo IA</string>
+    <string name="play_strategy_hybrid">IA híbrida</string>
+    <string name="play_strategy_smart">Pago inteligente</string>
+    <string name="play_strategy_desc_random">Azar uniforme: todas las combinaciones son igual de probables. Los sorteos son aleatorios, así que vale cualquiera.</string>
+    <string name="play_strategy_desc_hot">Prioriza los números que más han salido en los últimos 50 sorteos.</string>
+    <string name="play_strategy_desc_cold">Prioriza los números que más sorteos llevan sin aparecer.</string>
+    <string name="play_strategy_desc_balanced">Mezcla números calientes recientes y muy retrasados, y completa el resto al azar.</string>
+    <string name="play_strategy_desc_bayes">Estimación bayesiana de cada número: apariciones ponderadas por recencia y suavizadas con un prior de Dirichlet; el estado reciente pesa más sin descartar nunca ningún número.</string>
+    <string name="play_strategy_desc_markov">Modelo de co-ocurrencia condicionado al último sorteo: puntúa cada número según lo que suele salir justo después de los números recién extraídos (probabilidades con suavizado de Laplace).</string>
+    <string name="play_strategy_desc_ai">Regresión logística entrenada en tu dispositivo con el histórico guardado: frecuencias por ventanas, retraso y estacionalidad.</string>
+    <string name="play_strategy_desc_hybrid">Ensemble que combina el modelo de IA local, la estimación bayesiana y el modelo de Markov en una única probabilidad por número. Las partes que falten se renormalizan solas.</string>
+    <string name="play_strategy_desc_smart">Misma probabilidad de ganar y mejor pago esperado: evita cumpleaños y patrones populares para compartir los premios con menos gente, y descarta estructuras inverosímiles (sumas extremas, desequilibrio par/impar, números agrupados).</string>
     <string name="play_bets">Apuestas</string>
     <string name="play_generate">Generar boleto</string>
     <string name="play_regenerate">Nuevo boleto</string>
@@ -104,6 +117,26 @@
     <string name="compare_window">Ventana de evaluación</string>
     <string name="compare_bets">Apuestas por sorteo</string>
 
+    <!-- Joker (La Primitiva) -->
+    <string name="play_joker">Joker</string>
+    <string name="play_joker_hint">+1 € por boleto. El sistema asigna un código aleatorio de 7 cifras para el mismo sorteo.</string>
+    <string name="play_joker_code">Código Joker</string>
+    <string name="check_total">Total</string>
+    <string name="joker_prize_1">1ª (7 cifras)</string>
+    <string name="joker_prize_2">2ª (6 primeras o últimas cifras)</string>
+    <string name="joker_prize_3">3ª (5 primeras o últimas cifras)</string>
+    <string name="joker_prize_4">4ª (4 primeras o últimas cifras)</string>
+    <string name="joker_prize_5">5ª (3 primeras o últimas cifras)</string>
+    <string name="joker_prize_6">6ª (2 primeras o últimas cifras)</string>
+    <string name="joker_prize_7">7ª (primera o última cifra)</string>
+
+    <!-- Sorteos y precio -->
+    <string name="play_draws">Sorteos</string>
+    <string name="play_draws_hint">La misma combinación juega en todos los sorteos seleccionados.</string>
+    <string name="play_total">Total</string>
+    <string name="play_price_note">Precio oficial de SELAE</string>
+    <string name="ticket_draws">Sorteos: %1$s</string>
+
     <!-- IA en el dispositivo (Gemini Nano) -->
     <string name="ai_insight_title">Análisis con IA del dispositivo</string>
     <string name="ai_insight_badge">Gemini Nano · se ejecuta en tu teléfono</string>
@@ -125,6 +158,8 @@
     <string name="ai_prompt_bets">Apuestas:</string>
     <string name="ai_prompt_bet_line">%1$d) %2$s</string>
     <string name="ai_prompt_bet_refund">%1$s · reintegro %2$d</string>
+    <string name="ai_prompt_joker">Código Joker: %1$s</string>
+    <string name="ai_prompt_draws">Sorteos jugados: %1$s</string>
     <string name="ai_prompt_history">Histórico verificado: %1$s sorteos (%2$s a %3$s)</string>
     <string name="ai_prompt_hot">Números principales más frecuentes: %1$s</string>
     <string name="ai_prompt_cold">Números principales menos frecuentes: %1$s</string>

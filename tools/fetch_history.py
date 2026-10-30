@@ -81,6 +81,14 @@ def parse_combinacion(raw: str):
     return numbers, (comp.group(1) if comp else None), (re_int.group(1) if re_int else None)
 
 
+def parse_joker(item: dict) -> str:
+    """The winning Joker code of a La Primitiva draw (7 digits, leading zeros
+    are significant). The Joker game started in 2012, older draws have none."""
+    joker = (item.get("joker") or {}).get("combinacion") or ""
+    joker = joker.strip()
+    return joker if len(joker) == 7 and joker.isdigit() else ""
+
+
 def download_game(game: str, first_day: dt.date, today: dt.date) -> dict:
     """Returns {iso_date: [tokens...]} with one entry per draw."""
     draws: dict[str, list[str]] = {}
@@ -101,6 +109,7 @@ def download_game(game: str, first_day: dt.date, today: dt.date) -> dict:
                     comp or "",
                     re_int or "",
                     jackpot,
+                    parse_joker(item),
                 ]
             else:
                 if len(numbers) < 7:

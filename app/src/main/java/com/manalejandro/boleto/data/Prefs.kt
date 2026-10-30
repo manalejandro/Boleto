@@ -31,10 +31,18 @@ class Prefs(context: Context) {
         prefs.edit().putString(KEY_MODEL + game.key, json).apply()
     }
 
+    /** Version of the bundled archive the device has been seeded with. */
+    fun dataVersion(): Int = prefs.getInt(KEY_DATA_VERSION, 0)
+
+    fun setDataVersion(version: Int) {
+        prefs.edit().putInt(KEY_DATA_VERSION, version).apply()
+    }
+
     companion object {
         private const val KEY_LAST_UPDATE = "last_update_"
         private const val KEY_TICKET = "ticket_"
         private const val KEY_MODEL = "model_"
+        private const val KEY_DATA_VERSION = "data_version_"
 
         fun ticketToJson(boleto: Boleto): JSONObject {
             val lines = JSONArray()
@@ -49,6 +57,8 @@ class Prefs(context: Context) {
             return JSONObject()
                 .put("strategy", boleto.strategy.name)
                 .put("createdAt", boleto.createdAt)
+                .put("joker", boleto.joker ?: JSONObject.NULL)
+                .put("draws", JSONArray(boleto.drawDates))
                 .put("lines", lines)
         }
 
@@ -67,11 +77,21 @@ class Prefs(context: Context) {
                     refund = if (line.isNull("r")) null else line.optInt("r"),
                 )
             }
+            val drawsJson = json.optJSONArray("draws")
+            val drawDates = (0 until (drawsJson?.length() ?: 0)).mapNotNull { index ->
+                drawsJson?.optString(index)?.takeIf { it.length == 10 }
+            }
             return Boleto(
                 game = game,
                 lines = lines,
                 strategy = strategy,
                 createdAt = json.optString("createdAt"),
+                joker = if (json.isNull("joker")) {
+                    null
+                } else {
+                    LaeApi.parseJoker(json.optString("joker"))
+                },
+                drawDates = drawDates,
             )
         }
 
